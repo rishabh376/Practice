@@ -1,4 +1,4 @@
-# B16 Class Repository - DevOps Insiders 📚👩‍💻
+# B17 Class Repository - DevOps Insiders 📚👩‍💻
 
 Welcome to the official repository for B16 at DevOps Insiders! 🚀 Here, you'll find a meticulously organized collection of class notes, assignments, and code snippets generated during our engaging sessions.
 
