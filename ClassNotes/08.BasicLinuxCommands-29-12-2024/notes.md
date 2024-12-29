@@ -1,7 +1,3 @@
-Sure! Below are class notes on the listed commands, explaining their usage and examples:
-
----
-
 ### **1. `mkdir`** (Make Directory)
 
 The `mkdir` command is used to create new directories in the filesystem.
@@ -336,7 +332,3 @@ cd ..
 | `grep`     | Search for a string in files                    | `grep "pattern" file.txt`             |
 | `grep -i`  | Case-insensitive search                         | `grep -i "pattern" file.txt`          |
 | `cd ..`    | Change to the parent directory                  | `cd ..`                               |
-
----
-
-These commands are foundational for working in a Unix/Linux command-line environment, and they will help you navigate, manage files, and search for content efficiently.
