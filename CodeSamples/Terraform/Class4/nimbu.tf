@@ -13,8 +13,7 @@ terraform {
 }
 
 resource "azurerm_resource_group" "dhondhu-block" {
-  name     = "dhondhu-rg"
+  name     = "rg-devopsinsiders"
   location = "West Europe"
 }
-
 
