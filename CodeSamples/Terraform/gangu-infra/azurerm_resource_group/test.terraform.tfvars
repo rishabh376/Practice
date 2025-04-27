@@ -1,5 +1,0 @@
-rg_name1 = "shahid_kapoor1"
-rg_name2 = "shahid_kapoor2"
-rg_name3 = "shahid_kapoor3"
-rg_name4 = "shahid_kapoor4"
-rg_name5 = "shahid_kapoor5"
