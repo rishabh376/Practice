@@ -1,14 +1,8 @@
 vnets = {
   vnet1 = {
-    name                = "vnet-dhondhu1"
+    name                = "vnet-ghatak"
     location            = "centralindia"
-    resource_group_name = "rg-chintu"
+    resource_group_name = "rg-ghatak"
     address_space       = ["192.168.0.0/16"]
-  }
-  vnet2 = {
-    name                = "vnet-dhondhu2"
-    location            = "westus"
-    resource_group_name = "rg-dhondhu"
-    address_space       = ["192.169.0.0/16"]
   }
 }
