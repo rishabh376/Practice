@@ -1,37 +1,26 @@
-resource "azurerm_public_ip" "pip" {
-  name                = "pip-tintuvm"
-  resource_group_name = "rg-tinku"
-  location            = "centralindia"
-  allocation_method   = "Static"
-}
-
 resource "azurerm_network_interface" "nic" {
-  name                = "tinku-nic"
-  location            = "centralindia"
-  resource_group_name = "rg-tinku"
+  name                = var.nic_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = "/subscriptions/1075ec7a-b17a-4f37-bf3f-9d68c4506dc1/resourceGroups/rg-chintu/providers/Microsoft.Network/virtualNetworks/demovm-vnet/subnets/default"
+    subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "tinkuvm"
-  resource_group_name = "rg-tinku"
-  location            = "centralindia"
-  size                = "Standard_F2"
-  admin_username      = "tinkuadmin"
+  name                            = var.vm_name
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  size                            = var.vm_size
+  admin_username                  = var.admin_username
+  admin_password                  = var.admin_password
+  disable_password_authentication = false
   network_interface_ids = [
     azurerm_network_interface.nic.id,
   ]
-
-  # HW -  Find how to use admin password instead of SSH key
-  # admin_ssh_key {
-  #   username   = "adminuser"
-  #   public_key = file("~/.ssh/id_rsa.pub")
-  # }
 
   os_disk {
     caching              = "ReadWrite"
@@ -39,9 +28,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
-    version   = "latest"
+    publisher = var.image_publisher # Published ID from Azure Marketplace
+    offer     = var.image_offer     # Product ID from Azure Marketplace
+    sku       = var.image_sku       # Plan ID from Azure Marketplace
+    version   = var.image_version   # Version of the image
   }
 }
