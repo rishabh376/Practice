@@ -52,7 +52,17 @@ variable "nic_name" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "The ID of the subnet where the virtual machine will be deployed."
+variable "virtual_network_name" {
+  description = "VNET ka naam"
+  type        = string
+}
+
+variable "subnet_name" {
+  description = "subnet ka naam"
+  type        = string
+}
+
+variable "pip_name" {
+  description = "PIP ka naam"
   type        = string
 }
