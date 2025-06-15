@@ -55,15 +55,14 @@ module "frontend_vm" {
   vm_name              = "vm-frontend"
   vm_size              = "Standard_B1s"
   admin_username       = "devopsadmin"
-  admin_password       = "P@ssw0rd1234!"
   image_publisher      = "Canonical"
   image_offer          = "0001-com-ubuntu-server-focal"
   image_sku            = "20_04-lts"
   image_version        = "latest"
   nic_name             = "nic-vm-frontend"
-  virtual_network_name = "vnet-todoapp"
-  subnet_name          = "frontend-subnet"
-  pip_name             = "pip-todoapp-frontend"
+  frontend_ip_name     = "pip-todoapp-frontend"
+  vnet_name            = "vnet-todoapp"
+  frontend_subnet_name = "frontend-subnet"
 }
 
 module "public_ip_backend" {
@@ -74,25 +73,25 @@ module "public_ip_backend" {
   allocation_method   = "Static"
 }
 
-module "backend_vm" {
-  depends_on = [module.backend_subnet]
-  source     = "../modules/azurerm_virtual_machine"
+# module "backend_vm" {
+#   depends_on = [module.backend_subnet]
+#   source     = "../modules/azurerm_virtual_machine"
 
-  resource_group_name  = "rg-todoapp"
-  location             = "centralindia"
-  vm_name              = "vm-backend"
-  vm_size              = "Standard_B1s"
-  admin_username       = "devopsadmin"
-  admin_password       = "P@ssw0rd1234!"
-  image_publisher      = "Canonical"
-  image_offer          = "0001-com-ubuntu-server-focal"
-  image_sku            = "20_04-lts"
-  image_version        = "latest"
-  nic_name             = "nic-vm-backend"
-  virtual_network_name = "vnet-todoapp"
-  subnet_name          = "backend-subnet"
-  pip_name             = "pip-todoapp-backend"
-}
+#   resource_group_name  = "rg-todoapp"
+#   location             = "centralindia"
+#   vm_name              = "vm-backend"
+#   vm_size              = "Standard_B1s"
+#   admin_username       = "devopsadmin"
+#   admin_password       = "P@ssw0rd1234!"
+#   image_publisher      = "Canonical"
+#   image_offer          = "0001-com-ubuntu-server-focal"
+#   image_sku            = "20_04-lts"
+#   image_version        = "latest"
+#   nic_name             = "nic-vm-backend"
+#   virtual_network_name = "vnet-todoapp"
+#   subnet_name          = "backend-subnet"
+#   pip_name             = "pip-todoapp-backend"
+# }
 
 module "sql_server" {
   source              = "../modules/azurerm_sql_server"
@@ -109,6 +108,6 @@ module "sql_database" {
   source     = "../modules/azurerm_sql_database"
 
   sql_database_name = "tododb"
-  # server ka id fir hardcode... ye toh bada hi taklif bhara hai..
+  # Home Work - Server ID ko data block se lana hai - Karna hi karna hai..
   sql_server_id = "/subscriptions/1075ec7a-b17a-4f37-bf3f-9d68c4506dc1/resourceGroups/rg-todoapp/providers/Microsoft.Sql/servers/todosqlserver008"
 }

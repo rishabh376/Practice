@@ -52,17 +52,17 @@ variable "nic_name" {
   type        = string
 }
 
-variable "virtual_network_name" {
-  description = "VNET ka naam"
+variable "frontend_ip_name" {
+  description = "Frontend Wali IP ka naam"
   type        = string
 }
 
-variable "subnet_name" {
-  description = "subnet ka naam"
+variable "frontend_subnet_name" {
+  description = "Frontend Wale Subnet ka naam"
   type        = string
 }
 
-variable "pip_name" {
-  description = "PIP ka naam"
+variable "vnet_name" {
+  description = "Vnet ka naam"
   type        = string
 }
