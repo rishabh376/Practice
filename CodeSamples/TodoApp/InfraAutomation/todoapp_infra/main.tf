@@ -46,32 +46,58 @@ module "public_ip_frontend" {
 #HomeWork - Ye upr wala public IP ko frontend VM ke sath attach karna hai
 
 # Dard 2 - Do baar module bulana pad raha hai..  do vm ke lie...
-module "frontend_vm" {
-  depends_on = [module.frontend_subnet]
+# module "frontend_vm" {
+#   depends_on = [module.frontend_subnet]
+#   source     = "../modules/azurerm_virtual_machine"
+
+#   resource_group_name  = "rg-todoapp"
+#   location             = "centralindia"
+#   vm_name              = "vm-frontend"
+#   vm_size              = "Standard_B1s"
+#   admin_username       = "devopsadmin"
+#   image_publisher      = "Canonical"
+#   image_offer          = "0001-com-ubuntu-server-focal"
+#   image_sku            = "20_04-lts"
+#   image_version        = "latest"
+#   nic_name             = "nic-vm-frontend"
+#   frontend_ip_name     = "pip-todoapp-frontend"
+#   vnet_name            = "vnet-todoapp"
+#   frontend_subnet_name = "frontend-subnet"
+# }
+
+
+module "frontend_vm2" {
+  depends_on = [module.frontend_subnet, module.key_vault, module.vm_username, module.vm_password, module.public_ip_frontend]
   source     = "../modules/azurerm_virtual_machine"
 
   resource_group_name  = "rg-todoapp"
   location             = "centralindia"
-  vm_name              = "vm-frontend"
+  vm_name              = "vm-frontend2"
   vm_size              = "Standard_B1s"
   admin_username       = "devopsadmin"
   image_publisher      = "Canonical"
   image_offer          = "0001-com-ubuntu-server-focal"
   image_sku            = "20_04-lts"
   image_version        = "latest"
-  nic_name             = "nic-vm-frontend"
+  nic_name             = "nic-vm-frontend2"
   frontend_ip_name     = "pip-todoapp-frontend"
   vnet_name            = "vnet-todoapp"
   frontend_subnet_name = "frontend-subnet"
+  key_vault_name       = "sonamkitijori"
+  username_secret_name = "vm-username"
+  password_secret_name = "vm-password"
 }
 
-module "public_ip_backend" {
-  source              = "../modules/azurerm_public_ip"
-  public_ip_name      = "pip-todoapp-backend"
-  resource_group_name = "rg-todoapp"
-  location            = "centralindia"
-  allocation_method   = "Static"
-}
+# module "public_ip_backend" {
+#   source              = "../modules/azurerm_public_ip"
+#   public_ip_name      = "pip-todoapp-backend"
+#   resource_group_name = "rg-todoapp"
+#   location            = "centralindia"
+#   allocation_method   = "Static"
+# }
+
+
+
 
 # module "backend_vm" {
 #   depends_on = [module.backend_subnet]
@@ -93,21 +119,46 @@ module "public_ip_backend" {
 #   pip_name             = "pip-todoapp-backend"
 # }
 
-module "sql_server" {
-  source              = "../modules/azurerm_sql_server"
-  sql_server_name     = "todosqlserver008"
-  resource_group_name = "rg-todoapp"
+# module "sql_server" {
+#   source              = "../modules/azurerm_sql_server"
+#   sql_server_name     = "todosqlserver008"
+#   resource_group_name = "rg-todoapp"
+#   location            = "centralindia"
+#   # secret ko rakhne ka sudhar - Azure Key Vault
+#   administrator_login          = "sqladmin"
+#   administrator_login_password = "P@ssw0rd1234!"
+# }
+
+# module "sql_database" {
+#   depends_on          = [module.sql_server]
+#   source              = "../modules/azurerm_sql_database"
+#   sql_server_name     = "todosqlserver008"
+#   resource_group_name = "rg-todoapp"
+#   sql_database_name   = "tododb"
+# }
+
+module "key_vault" {
+  source              = "../modules/azurerm_key_vault"
+  key_vault_name      = "sonamkitijori"
   location            = "centralindia"
-  # secret ko rakhne ka sudhar - Azure Key Vault
-  administrator_login          = "sqladmin"
-  administrator_login_password = "P@ssw0rd1234!"
+  resource_group_name = "rg-todoapp"
 }
 
-module "sql_database" {
-  depends_on = [module.sql_server]
-  source     = "../modules/azurerm_sql_database"
-
-  sql_database_name = "tododb"
-  # Home Work - Server ID ko data block se lana hai - Karna hi karna hai..
-  sql_server_id = "/subscriptions/1075ec7a-b17a-4f37-bf3f-9d68c4506dc1/resourceGroups/rg-todoapp/providers/Microsoft.Sql/servers/todosqlserver008"
+module "vm_password" {
+  source              = "../modules/azurerm_key_vault_secret"
+  depends_on          = [module.key_vault]
+  key_vault_name      = "sonamkitijori"
+  resource_group_name = "rg-todoapp"
+  secret_name         = "vm-password"
+  secret_value        = "P@ssw01rd@123"
 }
+
+module "vm_username" {
+  source              = "../modules/azurerm_key_vault_secret"
+  depends_on          = [module.key_vault]
+  key_vault_name      = "sonamkitijori"
+  resource_group_name = "rg-todoapp"
+  secret_name         = "vm-username"
+  secret_value        = "devopsadmin"
+}
+

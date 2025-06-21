@@ -6,20 +6,20 @@ data "azurerm_public_ip" "kuch_bhi_ip" {
 data "azurerm_subnet" "frontend_subnet" {
   name                 = var.frontend_subnet_name
   virtual_network_name = var.vnet_name
-  resource_group_name  = "rg-todoapp"
+  resource_group_name  = var.resource_group_name
 }
 
 data "azurerm_key_vault" "kv" {
-  name                = "devopskitijori"
-  resource_group_name = "rg-keyvault"
+  name                = var.key_vault_name
+  resource_group_name = var.resource_group_name
 }
 
 data "azurerm_key_vault_secret" "vm-username" {
-  name         = "vm-username"
+  name         = var.username_secret_name
   key_vault_id = data.azurerm_key_vault.kv.id
 }
 
 data "azurerm_key_vault_secret" "vm-password" {
-  name         = "vm-password"
+  name         = var.password_secret_name
   key_vault_id = data.azurerm_key_vault.kv.id
 }

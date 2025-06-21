@@ -34,4 +34,15 @@ resource "azurerm_linux_virtual_machine" "vm" {
     sku       = var.image_sku       # Plan ID from Azure Marketplace
     version   = var.image_version   # Version of the image
   }
+
+  custom_data = base64encode(<<-EOF
+    #!/bin/bash
+    apt-get update
+    apt-get install -y nginx
+    systemctl enable nginx
+    systemctl start nginx
+  EOF
+  )
+
 }
+

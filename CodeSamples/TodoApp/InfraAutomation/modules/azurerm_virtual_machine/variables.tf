@@ -22,10 +22,6 @@ variable "admin_username" {
   description = "The administrator username for the virtual machine."
   type        = string
 }
-variable "admin_password" {
-  description = "The administrator password for the virtual machine."
-  type        = string
-}
 
 variable "image_publisher" {
   description = "The publisher of the image to use for the virtual machine."
@@ -66,3 +62,7 @@ variable "vnet_name" {
   description = "Vnet ka naam"
   type        = string
 }
+
+variable "key_vault_name" {}
+variable "username_secret_name" {}
+variable "password_secret_name" {}
