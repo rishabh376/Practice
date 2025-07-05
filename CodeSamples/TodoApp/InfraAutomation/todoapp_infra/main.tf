@@ -14,7 +14,6 @@ module "virtual_network" {
   address_space            = ["10.0.0.0/16"]
 }
 
-# Dard1 - Backend subnet and frontend subnet do baar repeat ho raha hai...
 module "frontend_subnet" {
   depends_on = [module.virtual_network]
   source     = "../modules/azurerm_subnet"
@@ -36,6 +35,7 @@ module "backend_subnet" {
 }
 
 module "public_ip_frontend" {
+  depends_on          = [module.resource_group]
   source              = "../modules/azurerm_public_ip"
   public_ip_name      = "pip-todoapp-frontend"
   resource_group_name = "rg-todoapp"
@@ -43,30 +43,7 @@ module "public_ip_frontend" {
   allocation_method   = "Static"
 }
 
-#HomeWork - Ye upr wala public IP ko frontend VM ke sath attach karna hai
-
-# Dard 2 - Do baar module bulana pad raha hai..  do vm ke lie...
-# module "frontend_vm" {
-#   depends_on = [module.frontend_subnet]
-#   source     = "../modules/azurerm_virtual_machine"
-
-#   resource_group_name  = "rg-todoapp"
-#   location             = "centralindia"
-#   vm_name              = "vm-frontend"
-#   vm_size              = "Standard_B1s"
-#   admin_username       = "devopsadmin"
-#   image_publisher      = "Canonical"
-#   image_offer          = "0001-com-ubuntu-server-focal"
-#   image_sku            = "20_04-lts"
-#   image_version        = "latest"
-#   nic_name             = "nic-vm-frontend"
-#   frontend_ip_name     = "pip-todoapp-frontend"
-#   vnet_name            = "vnet-todoapp"
-#   frontend_subnet_name = "frontend-subnet"
-# }
-
-
-module "frontend_vm2" {
+module "frontend_vm" {
   depends_on = [module.frontend_subnet, module.key_vault, module.vm_username, module.vm_password, module.public_ip_frontend]
   source     = "../modules/azurerm_virtual_machine"
 
@@ -95,9 +72,6 @@ module "frontend_vm2" {
 #   location            = "centralindia"
 #   allocation_method   = "Static"
 # }
-
-
-
 
 # module "backend_vm" {
 #   depends_on = [module.backend_subnet]
