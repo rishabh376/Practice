@@ -1,0 +1,5 @@
+resource_group_name        = "example-resources"
+resource_group_location    = "West Europe"
+storage_account_name       = "storageaccountname"
+account_tier               = "Standard"
+account_replication_type   = "GRS"
