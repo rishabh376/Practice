@@ -1,5 +1,5 @@
 module "virtual_network" {
-  source     = "../modules/azurerm_virtual_network"
+  source = "../modules/azurerm_virtual_network"
 
   virtual_network_name     = "vnet-lb"
   virtual_network_location = "centralindia"
@@ -61,7 +61,26 @@ module "public_ip_lb" {
   allocation_method   = "Static"
 }
 
+# lb, frontend_ip-config, probe, backend address pool, rule
 module "lb" {
   depends_on = [module.public_ip_lb]
   source     = "../modules/azurerm_loadbalancer"
+}
+
+module "pinki2lb_jod_yojna" {
+  source                = "../modules/azurerm_nic_lb_association"
+  nic_name              = "nic-pinki-vm"
+  resource_group_name   = "rg-devopsinsiders"
+  lb_name               = "hrsaheb-lb"
+  bap_name              = "lb-BackEndAddressPool1"
+  ip_configuration_name = "internal"
+}
+
+module "chinki2lb_jod_yojna" {
+  source                = "../modules/azurerm_nic_lb_association"
+  nic_name              = "nic-chinki-vm"
+  resource_group_name   = "rg-devopsinsiders"
+  lb_name               = "hrsaheb-lb"
+  bap_name              = "lb-BackEndAddressPool1"
+  ip_configuration_name = "internal"
 }

@@ -36,3 +36,5 @@ resource "azurerm_lb_rule" "lb_rule" {
   backend_address_pool_ids       = [azurerm_lb_backend_address_pool.pool1.id]
   probe_id                       = azurerm_lb_probe.probe.id
 }
+
+
