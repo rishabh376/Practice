@@ -63,4 +63,6 @@ variable "vnet_name" {
   type        = string
 }
 
-
+variable "nsg_name" {
+  
+}
