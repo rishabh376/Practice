@@ -1,14 +1,15 @@
-import { createTheme } from '@mui/material/styles';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#f50057', // Change this to your primary color
-    },
-    secondary: {
-      main: '#ba000d', // Change this to your secondary color
-    },
+const theme = {
+  colors: {
+    primary: '#4CAF50',
+    secondary: '#FF5722',
+    background: '#F5F5F5',
+    text: '#212121',
   },
-});
+  fonts: {
+    main: 'Arial, sans-serif',
+    heading: 'Georgia, serif',
+  },
+  spacing: (factor) => `${0.25 * factor}rem`,
+};
 
 export default theme;
