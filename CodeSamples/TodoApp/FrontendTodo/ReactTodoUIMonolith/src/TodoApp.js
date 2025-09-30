@@ -1,157 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button, TextField, Container, Typography, Grid, Card, CardContent, IconButton } from '@mui/material';
-import { Delete } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import React from 'react';
 
-const API_BASE_URL = 'http://135.235.172.144:8000/api';
+const TodoApp = () => {
+    const [todos, setTodos] = React.useState([]);
+    const [inputValue, setInputValue] = React.useState('');
 
-const backgroundImage = process.env.PUBLIC_URL + '/background.jpg';
+    const handleInputChange = (event) => {
+        setInputValue(event.target.value);
+    };
 
-function TodoApp() {
-    const [tasks, setTasks] = useState([]);
-    const [newTask, setNewTask] = useState({ title: '', description: '' });
-
-    const fetchTasks = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/tasks`);
-            setTasks(response.data);
-        } catch (error) {
-            console.error('Error fetching tasks', error);
+    const handleAddTodo = () => {
+        if (inputValue.trim()) {
+            setTodos([...todos, { text: inputValue, completed: false }]);
+            setInputValue('');
         }
     };
 
-    const createTask = async () => {
-        try {
-            await axios.post(`${API_BASE_URL}/tasks`, newTask);
-            fetchTasks();
-            setNewTask({ title: '', description: '' });
-        } catch (error) {
-            console.error('Error creating task', error);
-        }
+    const handleToggleTodo = (index) => {
+        const newTodos = [...todos];
+        newTodos[index].completed = !newTodos[index].completed;
+        setTodos(newTodos);
     };
 
-    const deleteTask = async (taskId) => {
-        try {
-            await axios.delete(`${API_BASE_URL}/tasks/${taskId}`);
-            fetchTasks();
-        } catch (error) {
-            console.error('Error deleting task', error);
-        }
+    const handleDeleteTodo = (index) => {
+        const newTodos = todos.filter((_, i) => i !== index);
+        setTodos(newTodos);
     };
-
-    useEffect(() => {
-        fetchTasks();
-    }, []);
 
     return (
-        <Box
-            style={{
-                backgroundImage: `url(${backgroundImage})`, // Use the imported variable
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundAttachment: 'fixed', // Optional, for a fixed background
-                minHeight: '100vh',
-            }}
-        >
-            <Container maxWidth="sm">
-                <Typography
-                    variant="h3"
-                    gutterBottom
-                    style={{
-                        textAlign: 'center', // Center align text
-                        color: 'white', // Set text color to white
-                        margin: '8px',
-                    }}
-                >
-                    <img src="/devopsinsiderslogo.png" alt="My Logo" />
-                    ToDo App
-                </Typography>
-                <div>
-                    <TextField
-                        label="Title"
-                        variant="outlined"
-                        color="secondary"
-                        fullWidth
-                        value={newTask.title}
-                        margin="normal"
-                        onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                        InputProps={{
-                            style: {
-                                color: 'white',       // Set text color to white
-                                borderColor: 'white',  // Set border color to white
-                                '&:hover': {
-                                    borderColor: 'white', // Set border color to white on hover
-                                },
-                            },
-                        }}
-                        InputLabelProps={{
-                            style: {
-                                color: 'white',       // Set label text color to white
-                            },
-                        }}
-                    />
-
-                    <TextField
-                        label="Description"
-                        variant="outlined"
-                        fullWidth
-                        multiline
-                        rows={4}
-                        value={newTask.description}
-                        margin="normal"
-                        onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                        InputProps={{
-                            style: {
-                                color: 'white',           // Set text color to white
-                                borderColor: 'white',      // Set border color to white
-                                '&:hover': {
-                                    borderColor: 'white',    // Set border color to white on hover
-                                },
-                            },
-                        }}
-                        InputLabelProps={{
-                            style: {
-                                color: 'white',           // Set label text color to white
-                            },
-                        }}
-                    />
-
-                    <Button variant="contained" color="primary" onClick={createTask} style={{ margin: '8px' }}>
-                        Add Task
-                    </Button>
-                </div>
-
-                <div>
-                    <Typography
-                        variant="h4"
-                        gutterBottom
-                        style={{
-                            textAlign: 'center', // Center align text
-                            color: 'white', // Set text color to white
-                            margin: '15px',
-                        }}
-                    >
-                        Existing Tasks
-                    </Typography>
-
-                    {tasks.map((task) => (
-                        <Box key={task.ID} mb={2}>
-                            <Card key={task.ID} variant="elevation">
-                                <CardContent>
-                                    <Typography variant="h6">{task.Title}</Typography>
-                                    <Typography variant="body2">{task.Description}</Typography>
-                                    <IconButton onClick={() => deleteTask(task.ID)} color="secondary">
-                                        <Delete />
-                                    </IconButton>
-                                </CardContent>
-                            </Card>
-                        </Box>
-                    ))}
-                </div>
-            </Container>
-        </Box>
+        <div>
+            <h1>Todo Application</h1>
+            <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                placeholder="Add a new todo"
+            />
+            <button onClick={handleAddTodo}>Add Todo</button>
+            <ul>
+                {todos.map((todo, index) => (
+                    <li key={index} style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                        {todo.text}
+                        <button onClick={() => handleToggleTodo(index)}>Toggle</button>
+                        <button onClick={() => handleDeleteTodo(index)}>Delete</button>
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
-}
+};
 
 export default TodoApp;

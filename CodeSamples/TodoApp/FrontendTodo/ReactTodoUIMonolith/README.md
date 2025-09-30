@@ -1,86 +1,50 @@
-# Readme for Todo App 📝
+# Todo Application - React Frontend
 
-### Installation 🚀
+This is the frontend part of the Todo application built using React. This project allows users to manage their tasks efficiently through a user-friendly interface.
 
-1. **Install Node.js and NPM on Ubuntu:**
-   - Make sure you have Node.js 16.x and NPM installed on your machine. If not, you can install them using the following commands:
-     ```bash
-     curl -s https://deb.nodesource.com/setup_16.x | sudo bash
-     sudo apt install nodejs -y
-     ```
+## Getting Started
 
-### Configuration ⚙️
+To get started with the project, follow these steps:
 
-2. **Update Backend URL:**
-   - Open the `src/TodoApp.js` file.
-   - Locate the variable storing the backend URL and update it with the appropriate value. (* See Below for PrivateIp Configuration)
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd TodoApp/FrontendTodo/ReactTodoUIMonolith
+   ```
 
-### Building and Running 🏗️
+2. **Install dependencies**:
+   Make sure you have Node.js installed. Then run:
+   ```bash
+   npm install
+   ```
 
-3. **Install Dependencies:**
-   - Run the following command to install project dependencies:
-     ```bash
-     npm install
-     ```
+3. **Run the application**:
+   Start the development server:
+   ```bash
+   npm start
+   ```
+   The application will be available at `http://localhost:3000`.
 
-4. **Build the Project:**
-   - Execute the following command to build the project:
-     ```bash
-     npm run build
-     ```
+## Project Structure
 
-### Deployment 🚀
+- **public/**: Contains static files such as `index.html`, `manifest.json`, and `robots.txt`.
+- **src/**: Contains the React components and styles.
+  - `App.js`: The main application component.
+  - `TodoApp.js`: The component handling the todo functionality.
+  - `index.js`: The entry point for the React application.
 
-5. **Deploy to Nginx Server:**
-   - Copy the generated artifacts from the build process.
-   - Deploy the artifacts to your Nginx server. Ensure that the server is properly configured to serve the application.
+## Deployment
 
-## * Using Private IP on the Backend VM 🌐
-
-To use a Private IP on the Backend VM, follow the steps below:
-
-### 1. Configure NGINX on the Backend VM ⚙️
-
-Open the NGINX configuration file:
-
+For deployment, you can build the application using:
 ```bash
-sudo nano /etc/nginx/sites-available/default
+npm run build
 ```
+This will create an optimized production build in the `build/` directory.
 
-### 2. Insert Proxy Configuration 🔄
+## Contributing
 
-Copy and paste the following code just above the `root /var/www/html` line:
+Feel free to submit issues or pull requests for any improvements or bug fixes.
 
-```nginx
-location /api {
-   proxy_pass http://<PrivateIP of BackendVM>:8000;
-   proxy_set_header Host $host;
-   proxy_set_header X-Real-IP $remote_addr;
-   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-   proxy_set_header X-Forwarded-Proto $scheme;
-}
-```
+## License
 
-Replace `<PrivateIP of BackendVM>` with the actual Private IP address of your Backend VM.
-
-### 3. Update Frontend Configuration ⚙️
-
-Open the `src/TodoApp.js` file in your frontend project.
-
-Update the Backend URL by replacing the existing line with the following:
-
-```javascript
-const API_BASE_URL = 'http://<FrontendVM Public IP>:80/api';
-```
-
-Replace `<FrontendVM Public IP>` with the actual Public IP address of your Frontend VM.
-
-## Important Note 📌
-
-Make sure to restart NGINX on the VM after making the changes:
-
-```bash
-sudo service nginx restart
-```
-
-These configurations enable communication between the Frontend and Backend using Private IP on the Backend VM. Ensure that the IPs and ports are correctly set to match your environment.
+This project is licensed under the MIT License.

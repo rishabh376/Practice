@@ -1,138 +1,104 @@
-module "resource_group" {
-  source                  = "../modules/azurerm_resource_group"
-  resource_group_name     = "rg-todoapp"
-  resource_group_location = "centralindia"
+provider "aws" {
+  region = var.aws_region
 }
 
-module "virtual_network" {
-  depends_on = [module.resource_group]
-  source     = "../modules/azurerm_virtual_network"
-
-  virtual_network_name     = "vnet-todoapp"
-  virtual_network_location = "centralindia"
-  resource_group_name      = "rg-todoapp"
-  address_space            = ["10.0.0.0/16"]
+resource "aws_vpc" "todoapp_vpc" {
+  cidr_block = var.vpc_cidr
+  enable_dns_support = true
+  enable_dns_hostnames = true
+  tags = {
+    Name = "todoapp_vpc"
+  }
 }
 
-module "frontend_subnet" {
-  depends_on = [module.virtual_network]
-  source     = "../modules/azurerm_subnet"
-
-  resource_group_name  = "rg-todoapp"
-  virtual_network_name = "vnet-todoapp"
-  subnet_name          = "frontend-subnet"
-  address_prefixes     = ["10.0.1.0/24"]
+resource "aws_subnet" "todoapp_subnet" {
+  vpc_id            = aws_vpc.todoapp_vpc.id
+  cidr_block        = var.subnet_cidr
+  availability_zone = var.availability_zone
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "todoapp_subnet"
+  }
 }
 
-module "backend_subnet" {
-  depends_on = [module.virtual_network]
-  source     = "../modules/azurerm_subnet"
-
-  resource_group_name  = "rg-todoapp"
-  virtual_network_name = "vnet-todoapp"
-  subnet_name          = "backend-subnet"
-  address_prefixes     = ["10.0.2.0/24"]
+resource "aws_internet_gateway" "todoapp_igw" {
+  vpc_id = aws_vpc.todoapp_vpc.id
+  tags = {
+    Name = "todoapp_igw"
+  }
 }
 
-module "public_ip_frontend" {
-  depends_on          = [module.resource_group]
-  source              = "../modules/azurerm_public_ip"
-  public_ip_name      = "pip-todoapp-frontend"
-  resource_group_name = "rg-todoapp"
-  location            = "centralindia"
-  allocation_method   = "Static"
+resource "aws_route_table" "todoapp_route_table" {
+  vpc_id = aws_vpc.todoapp_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.todoapp_igw.id
+  }
+
+  tags = {
+    Name = "todoapp_route_table"
+  }
 }
 
-module "frontend_vm" {
-  depends_on = [module.frontend_subnet, module.key_vault, module.vm_username, module.vm_password, module.public_ip_frontend]
-  source     = "../modules/azurerm_virtual_machine"
-
-  resource_group_name  = "rg-todoapp"
-  location             = "centralindia"
-  vm_name              = "vm-frontend2"
-  vm_size              = "Standard_B1s"
-  admin_username       = "devopsadmin"
-  image_publisher      = "Canonical"
-  image_offer          = "0001-com-ubuntu-server-focal"
-  image_sku            = "20_04-lts"
-  image_version        = "latest"
-  nic_name             = "nic-vm-frontend2"
-  frontend_ip_name     = "pip-todoapp-frontend"
-  vnet_name            = "vnet-todoapp"
-  frontend_subnet_name = "frontend-subnet"
-  key_vault_name       = "sonamkitijori"
-  username_secret_name = "vm-username"
-  password_secret_name = "vm-password"
+resource "aws_route_table_association" "todoapp_route_table_association" {
+  subnet_id      = aws_subnet.todoapp_subnet.id
+  route_table_id = aws_route_table.todoapp_route_table.id
 }
 
-# module "public_ip_backend" {
-#   source              = "../modules/azurerm_public_ip"
-#   public_ip_name      = "pip-todoapp-backend"
-#   resource_group_name = "rg-todoapp"
-#   location            = "centralindia"
-#   allocation_method   = "Static"
-# }
+resource "aws_security_group" "todoapp_sg" {
+  vpc_id = aws_vpc.todoapp_vpc.id
+  name   = "todoapp_sg"
 
-# module "backend_vm" {
-#   depends_on = [module.backend_subnet]
-#   source     = "../modules/azurerm_virtual_machine"
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-#   resource_group_name  = "rg-todoapp"
-#   location             = "centralindia"
-#   vm_name              = "vm-backend"
-#   vm_size              = "Standard_B1s"
-#   admin_username       = "devopsadmin"
-#   admin_password       = "P@ssw0rd1234!"
-#   image_publisher      = "Canonical"
-#   image_offer          = "0001-com-ubuntu-server-focal"
-#   image_sku            = "20_04-lts"
-#   image_version        = "latest"
-#   nic_name             = "nic-vm-backend"
-#   virtual_network_name = "vnet-todoapp"
-#   subnet_name          = "backend-subnet"
-#   pip_name             = "pip-todoapp-backend"
-# }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-# module "sql_server" {
-#   source              = "../modules/azurerm_sql_server"
-#   sql_server_name     = "todosqlserver008"
-#   resource_group_name = "rg-todoapp"
-#   location            = "centralindia"
-#   # secret ko rakhne ka sudhar - Azure Key Vault
-#   administrator_login          = "sqladmin"
-#   administrator_login_password = "P@ssw0rd1234!"
-# }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-# module "sql_database" {
-#   depends_on          = [module.sql_server]
-#   source              = "../modules/azurerm_sql_database"
-#   sql_server_name     = "todosqlserver008"
-#   resource_group_name = "rg-todoapp"
-#   sql_database_name   = "tododb"
-# }
-
-module "key_vault" {
-  source              = "../modules/azurerm_key_vault"
-  key_vault_name      = "sonamkitijori"
-  location            = "centralindia"
-  resource_group_name = "rg-todoapp"
+  tags = {
+    Name = "todoapp_sg"
+  }
 }
 
-module "vm_password" {
-  source              = "../modules/azurerm_key_vault_secret"
-  depends_on          = [module.key_vault]
-  key_vault_name      = "sonamkitijori"
-  resource_group_name = "rg-todoapp"
-  secret_name         = "vm-password"
-  secret_value        = "P@ssw01rd@123"
+resource "aws_instance" "todoapp_instance" {
+  ami           = var.instance_ami
+  instance_type = var.instance_type
+  subnet_id     = aws_subnet.todoapp_subnet.id
+  security_groups = [aws_security_group.todoapp_sg.name]
+
+  tags = {
+    Name = "todoapp_instance"
+  }
 }
 
-module "vm_username" {
-  source              = "../modules/azurerm_key_vault_secret"
-  depends_on          = [module.key_vault]
-  key_vault_name      = "sonamkitijori"
-  resource_group_name = "rg-todoapp"
-  secret_name         = "vm-username"
-  secret_value        = "devopsadmin"
-}
+resource "aws_db_instance" "todoapp_db" {
+  identifier         = "todoapp-db"
+  engine             = "mysql"
+  instance_class     = "db.t2.micro"
+  allocated_storage   = 20
+  username           = var.db_username
+  password           = var.db_password
+  db_name            = var.db_name
+  skip_final_snapshot = true
+  vpc_security_group_ids = [aws_security_group.todoapp_sg.id]
 
+  tags = {
+    Name = "todoapp_db"
+  }
+}
