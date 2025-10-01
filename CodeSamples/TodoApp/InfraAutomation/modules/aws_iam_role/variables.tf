@@ -19,3 +19,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "policy_name" {
+  description = "The name of the IAM policy"
+  type        = string
+}
+
