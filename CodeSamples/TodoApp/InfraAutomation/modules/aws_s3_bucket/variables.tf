@@ -26,3 +26,10 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "environment" {
+  description = "The environment for the S3 bucket (e.g., dev, prod)"
+  type        = string
+  default     = "dev"
+}
+

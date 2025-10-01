@@ -11,8 +11,8 @@ resource "aws_s3_bucket" "todo_app_bucket" {
 resource "aws_s3_bucket_versioning" "todo_app_bucket_versioning" {
   bucket = aws_s3_bucket.todo_app_bucket.id
 
-  versioning {
-    enabled = true
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
